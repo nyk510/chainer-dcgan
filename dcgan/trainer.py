@@ -8,6 +8,7 @@ from chainer import Variable, optimizers
 from .dcgan import Discriminator, Generator
 import matplotlib.pyplot as plt
 
+
 class Trainer(object):
 
     def __init__(self, gen, dis):
@@ -15,7 +16,7 @@ class Trainer(object):
         self.dis = dis
         self.z_dim = gen.z_dim
 
-    def fit(self,X, epochs=10, batchsize=1000, plotting=True):
+    def fit(self, X, epochs=10, batchsize=1000, plotting=True):
 
         self.X = X
         self.epochs = epochs
@@ -81,18 +82,19 @@ class Trainer(object):
 
             self.loss.append([sum_loss_of_gen, sum_loss_of_dis])
             if plotting:
-                plt.figure(figsize=(12,12))
-                n_row = 4
+                plt.figure(figsize=(12, 12))
+                n_row = 3
                 s = n_row**2
-                z = Variable(np.random.uniform(-1,1,100*s).reshape(-1,100).astype(np.float32))
+                z = Variable(np.random.uniform(-1, 1, 100 *
+                                               s).reshape(-1, 100).astype(np.float32))
                 x = self.gen(z)
                 y = self.dis(x)
                 y = F.softmax(y)
-                x = x.data.reshape(-1,28,28)
-                for i,xx in enumerate(x):
-                    plt.subplot(n_row,n_row,i+1)
-                    plt.imshow(xx)
-                    print(y.data[i])
-                    plt.title('TrueProb-{0:.3f}'.format(*y.data[i]))
+                x = x.data.reshape(-1, 28, 28)
+                for i, xx in enumerate(x):
+                    plt.subplot(n_row, n_row, i + 1)
+                    plt.imshow(xx, interpolation="nearest", cmap="gray")
+                    plt.axis('off')
+                    plt.title('True Prob {0:.3f}'.format(y[i][0]))
                 plt.tight_layout()
-                plt.savefig('epoch-{epoch}.png'.format(**locals()),dip=100)
+                plt.savefig('epoch-{epoch}.png'.format(**locals()), dip=100)

@@ -22,6 +22,13 @@ class Generator(Chain):
             dc3 = L.Deconvolution2D(128, 64, 2, stride=2, pad=1,),
             dc4 = L.Deconvolution2D(64, 1, 3, stride=3, pad=1),
 
+            # Convolution, Deconvolutionともに値は画像の大きさに合わせて変化させる
+            # 必要がある。
+
+            # 今回はMNISTをターゲットにするので、元の大きさは28×28
+            # 元の512チャンネルから1チャンネル（MNISTは白黒なためチャンネルが無い）に変換するまでに
+            # 3→4→5→10→28となるようにstride,pad,windowの大きさを選んでいる
+
 #             bn0 = L.BatchNormalization(6*6*512),
             bn1 = L.BatchNormalization(512),
             bn2 = L.BatchNormalization(256),
@@ -32,7 +39,7 @@ class Generator(Chain):
 
     def __call__(self,z, test=False):
         h = self.l1(z)
-        # 512チャンネルをもつ、6×6のベクトルに変換する
+        # 512チャンネルをもつ、3*3のベクトルに変換する
         h = F.reshape(h,(z.data.shape[0], 512, 3, 3))
 
         h = F.relu(self.bn1(h, test=test))

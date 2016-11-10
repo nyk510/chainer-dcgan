@@ -6,7 +6,7 @@ import numpy as np
 
 
 if __name__ == '__main__':
-    
+
     gen = Generator(100)
     dis = Discriminator()
 
@@ -14,11 +14,9 @@ if __name__ == '__main__':
     X = data['data']
     n_train = X.shape[0]
     X = np.array(X, dtype=np.float32)
-    X /= 256.
+    X /= 255.
     X = X.reshape(n_train,1, 28,28)
-
-    x_selected = np.random.permutation(X)[:20000]
 
     trainer = Trainer(gen,dis)
 
-    trainer.fit(x_selected,batchsize=1000)
+    trainer.fit(X,batchsize=1000)
