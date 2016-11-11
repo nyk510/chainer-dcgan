@@ -19,4 +19,4 @@ if __name__ == '__main__':
 
     trainer = Trainer(gen,dis)
 
-    trainer.fit(X,batchsize=1000)
+    trainer.fit(X,batchsize=100,epochs=100)
