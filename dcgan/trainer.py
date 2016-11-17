@@ -89,7 +89,7 @@ class Trainer(object):
                                                s).reshape(-1, 100).astype(np.float32))
                 x = self.gen(z)
                 y = self.dis(x)
-                y = F.softmax(y)
+                y = F.softmax(y).data
                 x = x.data.reshape(-1, 28, 28)
                 for i, xx in enumerate(x):
                     plt.subplot(n_row, n_row, i + 1)
@@ -98,5 +98,6 @@ class Trainer(object):
                     plt.title('True Prob {0:.3f}'.format(y[i][0]))
                 plt.tight_layout()
                 plt.savefig('epoch-{epoch}.png'.format(**locals()), dip=100)
+                plt.close('all')
 
         print(self.loss)
