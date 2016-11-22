@@ -98,5 +98,6 @@ class Trainer(object):
                     plt.title('True Prob {0:.3f}'.format(y[i][0]))
                 plt.tight_layout()
                 plt.savefig('epoch-{epoch}.png'.format(**locals()), dip=100)
+                plt.close('all')
 
         print(self.loss)
