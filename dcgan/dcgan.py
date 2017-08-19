@@ -1,4 +1,3 @@
-
 # coding: utf-8
 
 from chainer import Chain
@@ -18,9 +17,9 @@ class Generator(Chain):
         super(Generator, self).__init__(
             l1=L.Linear(z_dim, 3 * 3 * 512),
 
-            dc1=L.Deconvolution2D(512, 256, 2, stride=2, pad=1,),
-            dc2=L.Deconvolution2D(256, 128, 2, stride=2, pad=1,),
-            dc3=L.Deconvolution2D(128, 64, 2, stride=2, pad=1,),
+            dc1=L.Deconvolution2D(512, 256, 2, stride=2, pad=1, ),
+            dc2=L.Deconvolution2D(256, 128, 2, stride=2, pad=1, ),
+            dc3=L.Deconvolution2D(128, 64, 2, stride=2, pad=1, ),
             dc4=L.Deconvolution2D(64, 1, 3, stride=3, pad=1),
 
             # Convolution, Deconvolutionともに値は画像の大きさに合わせて変化させる
@@ -55,12 +54,12 @@ class Discriminator(Chain):
     '''入力された画像が偽物かどうかを判定する判別器
     '''
 
-    def __init__(self,):
+    def __init__(self, ):
         super(Discriminator, self).__init__(
             c1=L.Convolution2D(1, 64, 3, stride=3, pad=1, ),
-            c2=L.Convolution2D(64, 128, 2, stride=2, pad=1,),
-            c3=L.Convolution2D(128, 256, 2, stride=2, pad=1,),
-            c4=L.Convolution2D(256, 512, 2, stride=2, pad=1,),
+            c2=L.Convolution2D(64, 128, 2, stride=2, pad=1, ),
+            c3=L.Convolution2D(128, 256, 2, stride=2, pad=1, ),
+            c4=L.Convolution2D(256, 512, 2, stride=2, pad=1, ),
 
             l1=L.Linear(3 * 3 * 512, 2),
 

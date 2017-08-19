@@ -1,26 +1,36 @@
-
 # coding: utf-8
 
 import chainer.functions as F
 import numpy as np
 from chainer import Variable, optimizers
 
-from .dcgan import Discriminator, Generator
 import matplotlib.pyplot as plt
 
 
 class Trainer(object):
-
     def __init__(self, gen, dis):
         self.gen = gen
         self.dis = dis
         self.z_dim = gen.z_dim
 
-    def fit(self, X, epochs=10, batchsize=1000, plotting=True):
+    def fit(self, X, epochs=10, batch_size=1000, plotting=True):
+        """
+        generator と discriminator のトレーニングを行うメソッド
+        
+        :param X: 正しい画像. shape = (n_samples, width, height, channel)
+        :param int epochs: 
+            画像全体を何回訓練させるかを表す. 
+        :param int batch_size: 
+            学習時のバッチ数. 
+        :param bool plotting: 
+            訓練中に生成画像をプロットするかどうか. 
+            true のときプロットを行う.
+        :return:
+        """
 
         self.X = X
         self.epochs = epochs
-        self.batchsize = batchsize
+        self.batchsize = batch_size
         self.plotting = plotting
 
         n_train = X.shape[0]
@@ -36,10 +46,10 @@ class Trainer(object):
             sum_loss_of_dis = np.float32(0)
             sum_loss_of_gen = np.float32(0)
 
-            for i in range(int(n_train / batchsize)):
+            for i in range(int(n_train / batch_size)):
                 # print('iter {i}'.format(**locals()))
 
-                z = np.random.uniform(-1, 1, (batchsize, self.z_dim))
+                z = np.random.uniform(-1, 1, (batch_size, self.z_dim))
                 z = z.astype(dtype=np.float32)
                 z = Variable(z)
 
@@ -49,14 +59,14 @@ class Trainer(object):
                 # 答え合わせ
                 # ジェネレーターとしては0と判別させたい（騙すことが目的）
                 loss_gen = F.softmax_cross_entropy(
-                    y1, Variable(np.zeros(batchsize, dtype=np.int32)))
+                    y1, Variable(np.zeros(batch_size, dtype=np.int32)))
 
                 # 判別機としては1(偽物)と判別したい
                 loss_dis = F.softmax_cross_entropy(
-                    y1, Variable(np.ones(batchsize, dtype=np.int32)))
+                    y1, Variable(np.ones(batch_size, dtype=np.int32)))
 
                 # load true data form dataset
-                idx = perm[i * batchsize:(i + 1) * batchsize]
+                idx = perm[i * batch_size:(i + 1) * batch_size]
                 x_data = self.X[idx]
                 x_data = Variable(x_data)
 
@@ -64,7 +74,7 @@ class Trainer(object):
 
                 # 今度は正しい画像なので、0（正しい画像）と判別したい
                 loss_dis += F.softmax_cross_entropy(
-                    y2,  Variable(np.zeros(batchsize, dtype=np.int32)))
+                    y2, Variable(np.zeros(batch_size, dtype=np.int32)))
 
                 o_gen.zero_grads()
                 loss_gen.backward()
@@ -78,16 +88,17 @@ class Trainer(object):
                 sum_loss_of_gen += loss_gen.data
 
             print(
-                'epoch-{epoch}\tloss\tdiscreminator-{sum_loss_of_dis:.3f}\tgenerator-{sum_loss_of_gen:.3f}'.format(**locals()))
+                'epoch-{epoch}\tloss\tdiscreminator-{sum_loss_of_dis:.3f}\tgenerator-{sum_loss_of_gen:.3f}'.format(
+                    **locals()))
 
             self.loss.append([sum_loss_of_gen, sum_loss_of_dis])
+
             if plotting:
                 plt.figure(figsize=(12, 12))
                 n_row = 3
-                s = n_row**2
-                z = Variable(np.random.uniform(-1, 1, 100 *
-                                               s).reshape(-1, 100).astype(np.float32))
-                x = self.gen(z,test=True)
+                s = n_row ** 2
+                z = Variable(np.random.uniform(-1, 1, 100 * s).reshape(-1, 100).astype(np.float32))
+                x = self.gen(z, test=True)
                 y = self.dis(x)
                 y = F.softmax(y).data
                 x = x.data.reshape(-1, 28, 28)
